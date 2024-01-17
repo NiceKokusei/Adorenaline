@@ -1,0 +1,60 @@
+
+查看全环境
+conda info --envs
+
+环境MAdetlj2
+conda create --name MAdetlj2 python=3.7 -y
+conda activate MAdetlj2
+conda deactivate//别把这个也给复制了
+
+删除某个环境
+conda remove -n your_env_name(虚拟环境名称) --all
+删除文件夹，先cd进去父目录
+rm -rf MADet/*
+
+配置
+conda install pytorch==1.7.1 torchvision==0.8.2 cudatoolkit=10.1 -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64/
+
+防止（经典报错，mmpycocotools）
+先下mmpycocotool，在这个时候就还可以下载成功
+pip install mmpycocotools
+
+下载包
+pip install mmcv-full
+pip install xx -i https://pypi.org/simple 指定某个源下载包
+
+查看延迟
+#还真的有时候会卡网络而git不了
+ping github.com
+
+克隆仓库
+git clone https://github.com/ShichengMiao16/MADet.git --recursive
+cd MADet
+
+安装requirements，稍微等一小会，完成
+pip install -r requirements/build.txt
+pip install -v -e .  # or "python setup.py develop"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

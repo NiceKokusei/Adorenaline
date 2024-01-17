@@ -1,0 +1,653 @@
+
+
+
+#【10.31】
+#目的：ORCNN-fair1m 用第二次(一开始就2卡）的pth来测试；第二次训练集mAP更高，rcf路径下test只有8137张图（1.0任务就只需要8137张图）
+#结果：（成功）
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIR-1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIR-1/fair1mresult-1.pkl \
+--format-only 
+
+
+
+
+
+######################################################ms训练##################################################################
+#【11.01】
+#目的：ms训练
+#结果：（被误删）
+CUDA_VISIBLE_DEVICES=4,5 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_ms_rr_fair1m10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v1
+
+
+#【11.01】
+#目的：ms训练，断点继续训练
+#结果：（被误删）
+CUDA_VISIBLE_DEVICES=4,5 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_ms_rr_fair1m10.py \
+2 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/WORKDIR/epoch_2.pth \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v1
+
+
+
+#【11.01】
+#目的：ms训练（被误删了，重开）
+#结果：
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=44444 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_ms_rr_fair1m10.py \
+4 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2
+
+##################################################训练ss-trainval########################################################################
+
+
+#【11.01】
+#目的：ss训练，使用trainval；指定端口，同时跑多卡的不同任务（由于无val，故evaluate不可用）
+#结果：无法启动
+CUDA_VISIBLE_DEVICES=2,3 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v1-trainval
+
+
+
+#【11.01】
+#目的：ss训练，使用train；指定端口，同时跑多卡的不同任务（回到旧版train/val/test，本质变为测试自己数据集切的可不可以）
+#结果：无法启动
+CUDA_VISIBLE_DEVICES=2,3 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v1
+
+
+
+
+
+
+#【11.02】
+#目的：ss训练，使用train、val、test，学习率倍加（验证传递参数语法，普通/列表序号/引号）（同样变为测试自己数据集切的可不可以）
+#结果：（成功传递），但是寄了。（成功切好）（成功训练）{gpu数字参数位置得放对}
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=44445 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+4 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v1 \
+--options optimizer.lr=0.01
+
+
+
+
+
+
+###########################################（ms测试）#################################################
+
+#【11.03】
+#目的：ms测试（需改结果的保存路径）
+#结果：!!均无结果输出
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_ms_rr_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/fair1mresult-ms1-2.pkl \
+--format-only 
+
+
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/faster_rcnn_orpn_r50_fpn_1x_ms_rr_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/fair1mresult-ms2.pkl \
+--format-only 
+
+
+
+#【11.05】
+#目的：fair1m-ms测试
+#结果：！！有outpkl，无.txt结果
+CUDA_VISIBLE_DEVICES=2 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_ms_rr_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/fair1mresult-ms-11.05.pkl \
+--format-only 
+
+
+#【11.05】
+#目的：fair1m-ms测试，用第一次的ss测试配置文件，但是ms的pth
+#结果：有结果.txt生成；（但原理上应该不对，结果也不对，生成的是dota）
+CUDA_VISIBLE_DEVICES=2 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/fair1mresult-ms-11.05-sspy.pkl \
+--format-only 
+
+
+#【11.06】
+#目的：fair1m-ms测试，用ms的测试配置文件，且是ms的pth(在test.py中强行传入路径）
+#结果：【成功】【此题终结￥】
+CUDA_VISIBLE_DEVICES=0 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_ms_rr_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIRSms/v2/fair1mresult-ms-11.05-mspy-1.pkl \
+--format-only 
+___________________________________________________________________________________________________________________________________
+
+
+
+
+
+
+
+
+############################################ROI-TRANS#############################################################
+
+#【11.05】
+#目的：roi-trans的fair1m训练（多卡）（rotate）
+#结果：！！报错
+CUDA_VISIBLE_DEVICES=0,1 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/roi_trans/roi_trans_r50_fpn_1x_fair_le90.py \
+2 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/roitrans/v1
+
+
+
+
+#【11.05】
+#目的：roi-trans的fair1m训练（单卡）（rotate）
+#结果：！！报错
+CUDA_VISIBLE_DEVICES=2 \
+python /home/wjb/lj/atelier/Large-Selective-Kernel-Network/tools/train.py \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/roi_trans/roi_trans_r50_fpn_1x_fair_le90.py \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/roitrans/v2
+
+
+
+
+#【11.05】
+#目的：roi-trans的fair1m训练（多卡）（OBB）
+#结果：（成功）（由此证明卡0可能存在问题）
+CUDA_VISIBLE_DEVICES=1,2 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1 \
+--options optimizer.lr=0.005
+
+
+
+
+#【11.06】
+#目的：roi-trans的fair1m训练（多卡）（OBB）（断电了）
+#结果：（成功）（由此证明卡0可能存在问题）
+CUDA_VISIBLE_DEVICES=0,7 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1/epoch_5.pth \
+--options optimizer.lr=0.005
+
+
+#【11.06】
+#目的：roi-trans的fair1m训练（单卡）（OBB）（断电了）
+#结果：（成功）（由此证明卡0可能存在问题）
+CUDA_VISIBLE_DEVICES=6 \
+python /home/wjb/lj/atelier/OBBDetection/tools/train.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v2 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1/epoch_5.pth \
+--options optimizer.lr=0.0025
+
+
+
+#【11.06】
+#目的：roi-trans的fair1m测试（单卡）（用LQY的ep12.pth）
+#结果：（成功）（由此证明卡0可能存在问题）
+CUDA_VISIBLE_DEVICES=6 \
+python tools/test1.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+/home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v3/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v3/fair1mresult-roitrans-11.06.pkl \
+--format-only 
+
+
+#【11.07】
+#目的：比较中途断点训练，卡数与lr不匹配是否影响（单卡与两卡）
+#结果：  【成功训完，结果差别很小】
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/tools/train.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v2 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1/epoch_5.pth \
+--options optimizer.lr=0.0025
+
+CUDA_VISIBLE_DEVICES=1,2 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1/epoch_5.pth \
+--options optimizer.lr=0.005
+
+
+#【11.08】
+#目的：用卡数与lr不匹配是否影响（单卡与两卡）得到的.pth去测试比较
+#结果：  【￥此题结项】实验证明：初始2卡训练，后续训时lr维持初始状态；测试时使用2卡结果比1卡略高
+（单卡v2）
+CUDA_VISIBLE_DEVICES=0 \
+python tools/test-savedir.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+/home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v2/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v2/fair1mresult-roitrans-1card-11.08.pkl \
+--format-only 
+
+（双卡v1）
+CUDA_VISIBLE_DEVICES=0 \
+python tools/test-savedir.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+/home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/ROItrans/v1/fair1mresult-roitrans-2cards-11.08.pkl \
+--format-only 
+
+
+
+
+
+############################################ORCNN-trainval-ss#############################################################
+
+#【11.01】
+#目的：ss训练，使用trainval；指定端口，同时跑多卡的不同任务（由于无val，故evaluate不可用）
+#结果：无法启动
+CUDA_VISIBLE_DEVICES=2,3 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v1-trainval
+
+
+#【11.07】
+#目的：ss训练，使用trainval（自己切的）；AttributeError: 'ConfigDict' object has no attribute 'val'
+#结果：  
+CUDA_VISIBLE_DEVICES=1,2 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v2:trainval
+--options optimizer.lr=0.005
+
+
+#【11.08】
+#目的：ss训练，使用trainval（自己新切的fair1m_split1）;AttributeError: 'ConfigDict' object has no attribute 'val'
+#结果：  【￥此题终结】【成功】，把evaluate置none就可以规避 'ConfigDict' object has no attribute 'val'【也验证自己切的数据可以用】
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+4 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v2:trainval \
+--options optimizer.lr=0.01
+————————————————————————————————————————————————————————
+
+#【11.09】
+#目的：ss测试结果，使用trainval（自己切的）【使用更新的test+.py】
+#结果： 【￥：此题终结】【成功】
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v2:trainval/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v2:trainval/fair1mresult-orcnn-trainval-11.09.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v2:trainval/resultfair1m \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/WORKDIRSss/v2:trainval/fair1m-resultXml
+
+
+
+
+
+
+####################################################切图工作###############################################################
+
+#【10.31】
+#目的：切图fair，切trainval，用于后续训练(但98%报错）
+#结果：
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_trainval.json
+
+
+#【11.01】
+#目的：切图fair，切train，用于后续训练（同样的错误）
+#结果：
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_train.json
+
+——————————————————————cg线————————————————————
+#【11.01】
+#目的：切图dota，切val，没写类别，用于试错比较
+#结果：（成功）
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_ss_val_tmp.json
+
+
+#【11.01】
+#目的：切图fair，切val，没写类别，用于试错比较
+#结果：（成功）
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_val.json
+
+#【11.01】
+#目的：切图fair，切train，修改z_fair1m_ss_train.json为没写类别，查看效果
+#结果：（成功）-->至此验证终于是写类别“fair1m”的问题
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_train.json
+
+
+#【11.01】
+#目的：切图fair，切trainval
+#结果：OK
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_trainval.json
+
+
+#【11.01】
+#目的：切图fair，切test
+#结果：OK
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_test.json
+
+__________________________________________________________________________________________________________________________________________________
+
+#【11.08】
+#目的：切图fair，切test，加上类别，保存住fair1m_split1
+#结果：【成功】，看来是卡的问题（大雾）
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_test.json
+
+
+
+#【11.08】
+#目的：切图fair，切val，加上类别，保存住fair1m_split1
+#结果：（成功）（检查发现真的与‘filter_empty’有关）
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_val.json
+
+
+
+
+#【11.08】
+#目的：切图fair，切trainval，加上类别，保存住fair1m_split1（filter_empty=null）
+#结果：【￥此题结束】（成功）-->至此验证终于是写类别“fair1m”的问题
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_trainval.json
+
+
+
+#【11.01】
+#目的：切图fair，切train，加上类别，保存住fair1m_split1（filter_empty=F）
+#结果：（成功）-->至此验证终于是写类别“fair1m”的问题
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ss_train.json
+
+
+###################################################### CASCADE ##############################################################
+
+
+
+#【11.11】
+#目的：OBB-cascade-coco
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/cascade_rcnn/cascade_rcnn_r50_fpn_1x_coco.py \
+4 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/CASCADE/v1 \
+--options optimizer.lr=0.01 
+
+
+#【11.13】
+#目的：OBB-cascade-coco
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=1,2,3,4,5 \
+PORT=33333 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/cascade_rcnn/cascade_rcnn_r50_fpn_20e_coco.py \
+5 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/CASCADE/v2-20ep \
+--options optimizer.lr=0.0125 
+
+
+
+###################################################### RetinaNet:OBB ##############################################################
+
+
+#【11.13】
+#目的：RetinaNet:OBB-Dota-ep12
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=33336 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/retinanet_obb/retinanet_obb_r50_fpn_1x_dota10.py \
+4 \
+--options optimizer.lr=0.01 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v1/latest.pth \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v1
+
+
+#【11.13】
+#目的：RetinaNet:OBB-Dota-ep24
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=33337 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/retinanet_obb/retinanet_obb_r50_fpn_2x_dota10.py \
+4 \
+--options optimizer.lr=0.01 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v2:2x
+
+#目的：比较贯彻1x和2x的性能差异，顺带比较obb和hbb的代码差别
+
+
+
+
+#【11.17】
+#目的：RetinaNet:OBB-fair-ep12
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=33337 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/retinanet_obb/retinanet_obb_r50_fpn_1x_fair_trainval.py \
+4 \
+--options optimizer.lr=0.01 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v3-1x-fair-trvl
+
+#【11.19】
+#目的：RetinaNet:OBB-fair，使用trainval（自己切的）【使用更新的test+.py】
+#结果： 【￥：此题终结】【成功】
+CUDA_VISIBLE_DEVICES=1 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/retinanet_obb/retinanet_obb_r50_fpn_1x_fair_trainval.py \
+/home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v3-1x-fair-trvl/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v3-1x-fair-trvl/fair1mresult-retinanet_obb-trainval-11.19.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v3-1x-fair-trvl/resultfair1m \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/RetinanetOBB/v3-1x-fair-trvl/fair1m-resultXml
+
+
+______________________________________________________________________________________________________________________________________________
+
+
+###################################################### S2ANET-OBB ##############################################################
+
+
+#【11.17】
+#目的：S2ANET-OBB-dota-ep12
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=44450 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/s2anet/s2anet_r50_fpn_1x_dota10.py \
+4 \
+--options optimizer.lr=0.01 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/S2ANET/v1
+
+
+
+#【11.20】
+#目的：S2ANET-OBB-fair-ep12
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=0,1,2,3,4 \
+PORT=44451 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/s2anet/s2anet_r50_fpn_1x_fair.py \
+5 \
+--options optimizer.lr=0.0125 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/S2ANET/v2-1x-fair-trvl
+
+
+#【11.20】
+#目的：S2ANET-OBB-fair-ep12结果测试【使用更新的test+.py】
+#结果：25.  很低啊
+
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/s2anet/s2anet_r50_fpn_1x_fair.py \
+/home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/S2ANET/v2-1x-fair-trvl/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/S2ANET/v2-1x-fair-trvl/fair1mresult-s2anet-trainval-11.21.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/S2ANET/v2-1x-fair-trvl/resultfair1m \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/S2ANET/v2-1x-fair-trvl/fair1m-resultXml/test
+
+###################################################### Faster RCNN OBB ##############################################################
+
+
+
+#【11.20】
+#目的：Faster RCNN OBB-fair-ep12
+#结果：中途断点了，爆显存；续训了之后没问题
+
+CUDA_VISIBLE_DEVICES=0,2,3,4 \
+PORT=44452 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/faster_rcnn_obb/faster_rcnn_obb_r50_fpn_1x_fair10.py \
+4 \
+--options optimizer.lr=0.01 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FasterRCNNOBB/v1-1x-fair-trvl/latest.pth \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FasterRCNNOBB/v1-1x-fair-trvl
+
+
+#【11.23】
+#目的：Faster RCNN OBB-fair-ep12测试
+#结果：
+
+CUDA_VISIBLE_DEVICES=1 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/faster_rcnn_obb/faster_rcnn_obb_r50_fpn_1x_fair10.py \
+/home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FasterRCNNOBB/v1-1x-fair-trvl/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FasterRCNNOBB/v1-1x-fair-trvl/fair1mresult-fasterrcnnobb-trainval-11.21.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FasterRCNNOBB/v1-1x-fair-trvl/resultfair1m \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FasterRCNNOBB/v1-1x-fair-trvl/fair1m-resultXml/test
+
+
+
+
+
+
+###################################################### FCOS:OBB-caffe ##############################################################
+
+#【11.17】
+#目的：FCOS:OBB-caffe-ep12-dota
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=44451 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/fcos_obb/fcos_obb_r50_caffe_fpn_gn-head_4x4_1x_dota10.py \
+4 \
+--options optimizer.lr=0.01 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FCOS:OBB/v1
+
+
+#【11.18】
+#目的：FCOS:OBB-caffe-ep12-FAIR
+#结果：（成功）-->
+CUDA_VISIBLE_DEVICES=0,2,3,4 \
+PORT=44461 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/fcos_obb/fcos_obb_r50_caffe_fpn_gn-head_4x4_1x_fair_trvl.py \
+4 \
+--options optimizer.lr=0.01 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FCOS:OBB/v2-1x-fair-trvl
+
+
+
+
+
+#【11.19】
+#目的：fcos-obb-fair，使用trainval（自己切的）【使用更新的test+.py】
+#结果： 【￥：此题终结】【成功】
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/fcos_obb/fcos_obb_r50_caffe_fpn_gn-head_4x4_1x_fair_trvl.py \
+/home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FCOS:OBB/v2-1x-fair-trvl/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FCOS:OBB/v2-1x-fair-trvl/fair1mresult-fcos_obb-trainval-11.19.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FCOS:OBB/v2-1x-fair-trvl/resultfair1m \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/FCOS:OBB/v2-1x-fair-trvl/fair1m-resultXml
+
+
+
+
+###################################################### gliding vertex ##############################################################
+
+
+
+#【11.18】
+#目的：gliding vertex-ep12-dota
+#结果：
+CUDA_VISIBLE_DEVICES=0,1,2,3,4 \
+PORT=44461 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/gliding_vertex/gliding_vertex_r50_fpn_1x_dota10.py \
+5 \
+--options optimizer.lr=0.0125 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/Z-WORKDIRS/Gliding_Vertex/v1-1x-dota-trvl
+
+
+
+
+
+
+
+
+
+

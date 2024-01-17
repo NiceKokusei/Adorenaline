@@ -1,0 +1,52 @@
+
+查看全环境
+conda info --envs
+
+环境petdet
+conda create --name Z-petdet python=3.10 -y
+conda activate Z-petdet
+conda deactivate//别把这个也给复制了
+
+删除某个环境
+conda remove -n your_env_name(虚拟环境名称) --all
+删除文件夹，先cd进去父目录
+rm -rf MADet/*
+
+配置
+conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia
+
+查看某个包信息
+pip show mmcv
+
+下载依赖
+pip install -U openmim
+mim install mmcv-full==1.7.1
+mim install mmdet==2.28.2
+
+克隆仓库
+git clone https://github.com/canoe-Z/PETDet.git
+
+cd PETDet
+pip install -v -e .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

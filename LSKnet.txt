@@ -1,0 +1,46 @@
+
+查看全环境
+conda info --envs
+
+环境LSKnetlj1
+conda create --name LSKnetlj1 python=3.7 -y
+conda activate LSKnetlj1
+conda deactivate//别把这个也给复制了
+
+删除某个环境
+conda remove -n your_env_name(虚拟环境名称) --all
+删除文件夹，先cd进去父目录
+rm -rf MADet/*
+
+配置
+conda install pytorch==1.7.1 torchvision==0.8.2 cudatoolkit=10.1 -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64/
+
+查看某个包信息
+pip show mmcv
+
+
+最佳实践，安装mmrotate的前置准备结构
+pip install -U openmim
+mim install mmcv-full
+mim install mmdet\<3.0.0
+
+
+LSKnet仓库克隆
+git clone https://github.com/zcablii/Large-Selective-Kernel-Network.git
+
+进入并编译
+cd Large-Selective-Kernel-Network
+pip install -v -e .
+
+
+
+
+
+
+
+
+
+
+
+
+

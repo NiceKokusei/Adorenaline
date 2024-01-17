@@ -1,0 +1,83 @@
+
+conda create --name openmmlab python=3.8 -y
+conda activate openmmlab
+
+source activate openmmlab  
+$ conda deactivate
+
+conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64/
+
+pip install -U openmim
+mim install mmcv-full
+mim install mmdet\<3.0.0
+git clone https://github.com/open-mmlab/mmrotate.git
+cd mmrotate
+pip install -v -e .
+# "-v" 表示详细或更多输出
+# "-e" 表示以可编辑模式安装项目，
+# 因此，对代码进行的任何本地修改都将在不重新安装的情况下生效。
+------------------------------------------------------------------
+ctrl z 暂停进程；fg %1恢复到前台；
+rm -rf autodl-tmp/*   # *是通配符号，这样代表folder文件夹下所有文件/文件夹
+rm -rf work-dir-adamw1.10-customkeys-0.0001   #先cd进具体的文件夹再使用rmrf删除个别文件夹，保障安全
+du -sh 返回该目录的大小
+df -hl 查看磁盘剩余空间信息
+
+------------------------------------------------------------------
+
+###############################此前均为adamw1.9#############以下为Adamw1.10##################################
+对照组：SGD，0.005，epoch1：mAP:0.607（loss: 0.5499）；epoch2：mAP:0.659（loss: 0.4740）;epoch3：mAP:0.685（loss: 0.4733）；
+                                    ep4：0.740 ；ep5：0.765；ep6：0.786；ep7：0.802；ep8：0.811；
+                                    ep9：0.844；ep10：0.843；ep11：0.851（loss: 0.2610）；
+                                    epoch12：mAP:0.852（loss: 0.2560）
+#########################################################################################################
+
+
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+--work-dir /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001 \
+--resume-from /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001/epoch_5.pth
+
+ep1：0.606；ep2：0.660；ep3：0.719；ep4：0.765；ep5：0.791；ep6：0.801 ；
+ep7：0.813；ep8：0.803；ep9：0.848；ep10：0.862；ep11：0.860；ep12：0.862。
+
+
+------------------------------------------------
+测试
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001/Task1_results
+---------------------
+ohem
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+--work-dir /root/autodl-tmp/2.work-dir-adamw1.10-customkeys-ohem-0.0001 \
+1：0.619；2：0.704；3：0.727；
+
+ohem+3ep断点
+python tools/train.py /root/autodl-tmp/2.work-dir-adamw1.10-customkeys-ohem-0.0001/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+--work-dir /root/autodl-tmp/2.work-dir-adamw1.10-customkeys-ohem-0.0001 \
+--resume-from /root/autodl-tmp/2.work-dir-adamw1.10-customkeys-ohem-0.0001/epoch_3.pth
+
+测试
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/2.work-dir-adamw1.10-customkeys-ohem-0.0001/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/2.work-dir-adamw1.10-customkeys-ohem-0.0001/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/2.work-dir-adamw1.10-customkeys-ohem-0.0001/Task1_results
+---------------------
+新
+
+
+
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/cascade_oriented_rcnn_r50_fpn_1x_dota_le90.py \
+--work-dir /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001-cascade \
+
+
+测试
+python /root/mmrotate/tools/test.py \
+ /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+ /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001/epoch_12.pth\
+  --show-dir /root/autodl-tmp/work_dirs/vis
+
+
+
+

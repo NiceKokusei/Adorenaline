@@ -1,0 +1,395 @@
+
+conda activate obbdetectionlj4
+cd lj/atelier/OBBDetection
+
+
+@01.05-->-----------------------------------------------------------------------------------------------------------
+
+#目的：fair-orcnn-adamw1x训练
+#【成功】
+
+CUDA_VISIBLE_DEVICES=2,3,4,5,6,7 \
+PORT=56134 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/orcnn_r50_fpn_1x_fair1m_adamw.py \
+6 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1-orcnn-adamw1x \
+--options optimizer.lr=0.000075
+
+
+
+#目的：fair-orcnn-adamw2x训练
+#【成功】
+
+CUDA_VISIBLE_DEVICES=2,3,4,5,6,7 \
+PORT=56136 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/orcnn_r50_fpn_2x_fair1m_adamw.py \
+6 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1.1-orcnn-adamw2x \
+--options optimizer.lr=0.000075
+
+
+
+CUDA_VISIBLE_DEVICES=1,2,3,5,6,7 \
+PORT=56138 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+6 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v2-orcnn-ms-adamw1x \
+--options optimizer.lr=0.000075
+
+
+
+
+CUDA_VISIBLE_DEVICES=2,3,4,5,6,7 \
+PORT=56140 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/cascade_orcnn_r50_fpn_1x_fair1m_adamw.py \
+6 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v3-cascadeorcnn-adamw1x \
+--options optimizer.lr=0.000075
+
+
+
+@01.08-->-----------------------------------------------------------------------------------------------------------
+
+#目的：fair-orcnn-adamw1x训练【使用更新的test+.py】
+#结果： 【￥：此题终结】【成功】
+
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/orcnn_r50_fpn_1x_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1-orcnn-adamw1x/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1-orcnn-adamw1x/test.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1-orcnn-adamw1x/fair1m-resultDota \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1-orcnn-adamw1x/fair1m-resultXml
+
+
+
+CUDA_VISIBLE_DEVICES=1 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/orcnn_r50_fpn_2x_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1.1-orcnn-adamw2x/epoch_24.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1.1-orcnn-adamw2x/test.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1.1-orcnn-adamw2x/fair1m-resultDota \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair-trainval/v1.1-orcnn-adamw2x/fair1m-resultXml
+
+
+
+@01.11-->-----------------------------------推倒trainval重来，只用train--------------------------------------------------------------
+
+
+#目的：fair-orcnn-sgd1x训练,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=4,5,6,7 \
+PORT=56155 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+4 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1-orcnn-sgd1x \
+--options optimizer.lr=0.01
+
+
+#目的：fair-orcnn-adamw1x训练,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=1,2,3 \
+PORT=56198 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/orcnn_r50_fpn_1x_fair1m_adamw.py \
+3 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.1-orcnn-adamw1x \
+--options optimizer.lr=0.000075
+
+
+#目的：fair-orcnn-ms-rr-adamw1x训练,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=2,3,4,5,6,7 \
+PORT=56177 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/fair/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+6 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x \
+--options optimizer.lr=0.00015
+
+   
+~~~~~~~
+#目的：fair-orcnn-ms-rr-adamw1x训练,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=1,2,3,4,5,6 \
+PORT=56048 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_ms_rr_dota10.py \
+6 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/dota1.0/v1-orcnn-ms-rr-sgd1x \
+--options optimizer.lr=0.015
+
+
+
+----------------------------------------------------
+
+#目的：fair1.0切图ms，test
+#【成功】
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ms_test.json
+
+
+#目的：fair1.0切图ms，train
+#【成功】
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_fair1m_ms_train.json
+
+----------------------------------------------------
+
+#目的：fair-orcnn-sgd1x【测试】,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1-orcnn-sgd1x/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1-orcnn-sgd1x/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1-orcnn-sgd1x/test.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1-orcnn-sgd1x/fair1m-resultDota \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1-orcnn-sgd1x/fair1m-resultXml/test
+
+
+#目的：fair-orcnn-adamw1x【测试】,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=1 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.1-orcnn-adamw1x/orcnn_r50_fpn_1x_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.1-orcnn-adamw1x/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.1-orcnn-adamw1x/test.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.1-orcnn-adamw1x/fair1m-resultDota \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.1-orcnn-adamw1x/fair1m-resultXml/test
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------
+
+
+#目的：faster_rcnn_obb-sgd1x训练,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=4,5,6,7 \
+PORT=46155 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/faster_rcnn_obb/faster_rcnn_obb_r50_fpn_1x_fair10.py \
+4 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/frcnnobb/v1-frcnnobb-sgd1x \
+--options optimizer.lr=0.01
+
+#目的：roi_transformer训练,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=1,2,3 \
+PORT=46176 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/roi_transformer/faster_rcnn_roitrans_r50_fpn_1x_fair10.py \
+3 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/roitrans/v1-roitrans-sgd1x \
+--options optimizer.lr=0.0075
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+#【同样已生成，完结，/home】
+#【】
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/epoch_12.pth \
+--out home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/test1.pkl \
+--format-only \
+--fair1m \
+--save-dir home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/fair1m-resultDota \
+--tar-dir home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/fair1m-resultXml/test
+
+
+-----------------------------------------------------------------------------------------------------------
+@01.15-->-----------------------------------只用train--------------------------------------------------------------
+
+
+#【同样已生成，完结，/home】
+#【】
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/epoch_12.pth \
+--out home/wjb/lj/atelier/OBBDetection/ZZZZ/tmp/test0115.pkl \
+--format-only \
+--fair1m \
+--save-dir home/wjb/lj/atelier/OBBDetection/ZZZZ/tmp/ms-fair1m-resultDota \
+--tar-dir home/wjb/lj/atelier/OBBDetection/ZZZZ/tmp/ms-fair1m-resultXml/test
+
+
+
+# fair多卡测试
+【还未尝试】
+CUDA_VISIBLE_DEVICES=0,7 \
+bash /home/wjb/lj/atelier/OBBDetection/tools/dist_test.sh \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/epoch_12.pth \
+2 \
+--out home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/print1/ms-test0115.pkl \
+--format-only \
+--fair1m \
+--save-dir home/wjb/lj/atelier/OBBDetection/fair1.0-train/print1/ms-fair1m-resultDota \
+--tar-dir home/wjb/lj/atelier/OBBDetection/fair1.0-train/print1/ms-fair1m-resultXml/test
+
+
+
+
+
+#【同样已生成，完结，/home】
+CUDA_VISIBLE_DEVICES=7 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/epoch_12.pth \
+--out home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/print/ms-test0115.pkl \
+--format-only \
+--fair1m \
+--save-dir home/wjb/lj/atelier/OBBDetection/fair1.0-train/print/ms-fair1m-resultDota \
+--tar-dir home/wjb/lj/atelier/OBBDetection/fair1.0-train/print/ms-fair1m-resultXml/test
+
+
+
+
+yorunikake
+#目的：fair-orcnn-ms-rr-adamw1x【测试】,只有train
+#【成功】
+#【但是，输出路径均为相对路径，“少写了/home”，寄，白费力气太久】【此题终结！】
+
+CUDA_VISIBLE_DEVICES=7 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/epoch_12.pth \
+--out home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/print020/ms-test0115.pkl \
+--format-only \
+--fair1m \
+--save-dir home/wjb/lj/atelier/OBBDetection/fair1.0-train/print020/ms-fair1m-resultDota \
+--tar-dir home/wjb/lj/atelier/OBBDetection/fair1.0-train/print020/ms-fair1m-resultXml/test
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################### mini-fair相关 ##########################################
+
+------------------------------------------------------mini测试-----------------------------------------------------
+
+#目的：mini-ms【测试】,只有train
+#【成功】
+CUDA_VISIBLE_DEVICES=2 \
+python /home/wjb/lj/atelier/OBBDetection/tools/test+.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/mini/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZZ/tmp/mini-test0115.pkl \
+--format-only \
+--fair1m \
+--save-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/mini/fair1m-resultDota \
+--tar-dir /home/wjb/lj/atelier/OBBDetection/ZZZZ/mini/fair1m-resultXml/test
+
+
+------------------------------------------------------mini切图-----------------------------------------------------
+
+￥￥【切图注意split_configs中类别得写全写对，否则后续就全fair变成默认dota】
+
+#目的：fair1.0mini切图【ms，test】
+#【成功】
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_minifair_ms_test.json
+
+#目的：fair1.0mini切图【ss，test】
+#【成功】
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/split_configs/dota1_0/z_minifair_ss_test.json
+
+---------------------------------------------------------------------------------------------------------------------
+
+#######################################################################################
+
+
+
+
+
+
+
+
+#目的：多卡测试尝试【ms，test】
+#【】
+￥￥【注意dist_test和slurm区别】
+
+CUDA_VISIBLE_DEVICES=0,7 \
+bash /home/wjb/lj/atelier/OBBDetection/tools/dist_test.sh \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/orcnn_r50_fpn_1x_ms_rr_fair1m_adamw.py \
+/home/wjb/lj/atelier/OBBDetection/ZZZZ/fair1.0-train/v1.2-orcnn-ms-rr-adamw1x/epoch_12.pth \
+2 \
+--out home/wjb/lj/atelier/OBBDetection/ZZZZ/try/old/ms-test0115.pkl \
+--format-only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

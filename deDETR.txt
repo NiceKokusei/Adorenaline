@@ -1,0 +1,121 @@
+
+###################################################### deDETR ##############################################################
+
+
+@11.20-->
+
+#目的：deformable-detr_r50_16xb2-50e_coco  g2
+【报错】原因在于文件命名有-而非_
+
+CUDA_VISIBLE_DEVICES=3,4 \
+PORT=44450 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/mmdetection2/configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py \
+2 \
+--auto-scale-lr \
+--work-dir /home/wjb/lj/atelier/mmdetection2/WORKDIRS/v1
+
+
+【】
+CUDA_VISIBLE_DEVICES=0,2,3,4 \
+PORT=44451 \
+bash ./tools/dist_train.sh \
+configs/deformable_detr/deformable_detr_r50_16xb2_50e_coco.py \
+4 \
+--auto-scale-lr \
+--work-dir Z-WORKDIRS/v1
+
+———————————————————————— 重开新环境mmdetection ————————————————————————————
+
+
+克隆与编译
+git clone https://github.com/open-mmlab/mmdetection.git mmdetection
+cd mmdetection
+pip install -v -e .
+# "-v" 指详细说明，或更多的输出
+# "-e" 表示在可编辑模式下安装项目，因此对代码所做的任何本地修改都会生效，从而无需重新安装。
+
+
+@11.21-->
+
+#目的：deformable-detr_r50_16xb2-50e_coco  g4
+【成功】但训练时间太长，20d
+
+CUDA_VISIBLE_DEVICES=0,2,3,4 \
+PORT=44451 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/mmdetection/configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py \
+4 \
+--auto-scale-lr \
+--work-dir /home/wjb/lj/atelier/mmdetection/ZWORKDIRS/v1
+
+
+
+@11.24-->
+#目的：deformable-detr_r50_16xb2-50e_coco  g4  用来占着闲置的卡
+【成功】但训练时间太长，20d
+
+CUDA_VISIBLE_DEVICES=0,1,4,5 \
+PORT=44452 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/mmdetection/configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py \
+4 \
+--auto-scale-lr \
+--work-dir /home/wjb/lj/atelier/mmdetection/ZWORKDIRS/v1
+
+
+
+@01.03-->
+#目的：deformable-detr_r50_16xb2-50e_coco  g4  用来占着闲置的卡
+【成功】但训练时间太长，20d
+
+CUDA_VISIBLE_DEVICES=3,4,5,6 \
+PORT=44454 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/mmdetection/configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py \
+4 \
+--auto-scale-lr \
+--work-dir /home/wjb/lj/atelier/mmdetection/ZWORKDIRS/v1
+
+
+@01.03-->
+#目的：deformable-detr_r50_16xb2-50e_coco  g4  用来占着闲置的卡
+【成功】但训练时间太长，20d
+
+CUDA_VISIBLE_DEVICES=2,3,4,5,6,7 \
+PORT=44454 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/mmdetection/configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py \
+6 \
+--auto-scale-lr \
+--work-dir /home/wjb/lj/atelier/mmdetection/ZWORKDIRS/v1
+
+
+
+
+————————————————————————测试test de-detr————————————————————————————————
+
+
+CUDA_VISIBLE_DEVICES=0 \
+python /home/wjb/lj/atelier/mmdetection/tools/test.py \
+/home/wjb/lj/atelier/mmdetection/configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py \
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

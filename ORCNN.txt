@@ -1,0 +1,276 @@
+conda info -e
+conda list
+conda env list  查看当前系统有多少个环境
+python -V 
+nvcc -V
+ #注意V是大写
+print(torch.__version__)
+conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64/
+import cv2
+
+
+--------------------------------------------------------------------------------------------------
+conda create -n open-mmlab python=3.7 pytorch==1.7.0 cudatoolkit=10.1 torchvision -c pytorch -y
+conda activate open-mmlab
+pip install openmim
+mim install mmcv-full
+mim install mmdet
+git clone https://github.com/open-mmlab/mmrotate.git
+cd mmrotate
+pip install -r requirements/build.txt
+pip install -v -e .
+----------------------------------------------------------------------------------------------------
+
+
+
+pip install mmcv-full==1.4.0 -f https://download.openmmlab.com/mmcv/dist/cu101/torch1.6.0/index.html --no-cache-dir
+
+source activate obbdetection
+conda deactivate
+
+python OBBDetection/demo/huge_image_demo.py demo/dota_demo.jpg OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r101_fpn_1x_ms_rr_dota10.py	 ckpt/faster_rcnn_orpn_r101_fpn_1x_mssplit_rr_dota10_epoch12.pth BboxToolkit/tools/split_configs/dota1_0/ss_test.json
+python OBBDetection/demo/huge_image_demo.py OBBDetection/demo/dota_demo.jpg OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_dota10.py	 OBBDetection/ckpt/faster_rcnn_orpn_r50_fpn_1x_dota10_epoch12.pth BboxToolkit/tools/split_configs/dota1_0/ss_test.json
+  
+export http_proxy=http://192.168.0.91:12798 && export https_proxy=http://192.168.0.91:12798
+
+source activate openmmlab  
+$ conda deactivate
+
+conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64/
+
+python tools/train.py ${CONFIG_FILE} [optional arguments]
+python tools/train.py configs/obb/oriented_rcnn/faster_rcnn_orpn_r101_fpn_3x_hrsc.py --work-dir work_dirs --gpus 1
+
+
+python tools/data/dota/split/img_split.py --base-json \tools/data/dota/split/split_configs/ss_train.json
+
+python tools/data/dota/split/img_split.py --base-json tools/data/dota/split/split_configs/ss_train.json
+python tools/data/dota/split/img_split.py --base-json tools/data/dota/split/split_configs/ss_test.json
+python tools/data/dota/split/img_split.py --base-json tools/data/dota/split/split_configs/ss_val.json
+python tools/data/dota/split/img_split.py --base-json tools/data/dota/split/split_configs/ss_trainval.json
+
+
+在对应文件夹，解压图片和标签
+unzip part1.zip   ||  cd labelTxt-v1.0     unzip labelTxt.zip
+
+
+python tools/train.py configs/obb/oriented_rcnn/faster_rcnn_orpn_r101_fpn_3x_hrsc.py --work-dir work_dirs 
+python tools/train.py configs/s2anet/s2anet_r50_fpn_1x_dota_le135.py --work-dir work-dir/run/s2anet/
+python tools/train.py configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir
+
+训练
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir
+断点续训
+python tools/train.py configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir --resume-from work_dirs/epoch_6.pth
+
+测试
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/work-dir/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/work-dir/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/work_dirs/Task1_results
+
+可视化
+python /root/mmrotate/tools/test.py \
+  /root/autodl-tmp/work-dir/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+ /root/autodl-tmp/work-dir/epoch_12.pth \
+  --show-dir /root/autodl-tmp/work_dirs/vis
+
+导出配置文件查看
+python  /root/mmrotate/tools/misc/print_config.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py > configtmp.txt
+
+修改rcnn层ohem训练，含断点续训
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir-ohem --resume-from /root/autodl-tmp/work-dir-ohem/epoch_1.pth
+
+ohem后测试
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/work-dir-ohem/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/work-dir-ohem/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/work-dir-ohem/Task1_results
+
+
+VScode注释
+选中多行，先按Ctrl+k，再按Ctrl+c，如果想要取消多行注释，选中多行，先按Ctrl+k，再按Ctrl+u
+
+注册
+pip install -v -e .
+
+跨地区迁移数据盘
+cd /root/autodl-tmp/ &&  tar cf - * | ssh -p 47096 root@region-41.seetacloud.com "cd /root/autodl-tmp && tar xf -"
+scp -rP 47096 /root/autodl-tmp/split_ss_dota root@region-41.seetacloud.com:/root/autodl-tmp/
+删除数据盘文件夹
+rm -rf autodl-tmp/*   # *是通配符号，这样代表folder文件夹下所有文件/文件夹
+ctrl+c 结束正在运行的程序【ping、telnet等】
+ctrl+d 结束输入或退出shell
+ctrl+s 暂停屏幕输出
+ctrl+q 恢复屏幕输出
+ctrl+l 清屏，等同于Clear
+
+修改ohem+adamw训练，含断点续训（已删除）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir-ohem-adamw 
+
+修改rcnn层ohem训练，学习率0.0025
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir-ohem-0.0025
+
+rcnn层ohem后测试，学习率0.0025
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/work-dir-ohem-0.0025/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/work-dir-ohem-0.0025/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/work-dir-ohem-0.0025/Task1_results
+
+
+optimizer优化器从SGD改为AdamW
+optimizer = dict(
+    type='AdamW',
+    lr=5e-05,
+    betas=(0.9, 0.999),
+    weight_decay=0.05,
+    paramwise_cfg=dict(
+        custom_keys=dict(
+            absolute_pos_embed=dict(decay_mult=0.0),
+            relative_position_bias_table=dict(decay_mult=0.0),
+            norm=dict(decay_mult=0.0))))
+
+
+
+
+修改rcnn层ohem训练，加adamw，（lr0.005）：mAp=0
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/1.work-dir-ohem-adamw-0.005
+第二次调整优化器参数去掉paramwise，（lr0.005）：mAp=0
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/2.work-dir-ohem-adamw-pr-0.005
+第三次调整优化器参数全部缺省（lr0.001）：mAp=0.007
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/3.work-dir-ohem-adamw-0.001
+第四次调整优化器参数全部缺省（lr0.001），但optimizer_config = dict(grad_clip=None)：mAp=0
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/4.work-dir-ohem-adamw-cfg-0.001
+
+
+第五次调整优化器，取消rcnn层ohem，含有grad_clip，调整优化器AdamW（默认lr0.001）：mAp=0.007
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/5.work-dir-adamw-0.001
+
+###############################此前均为adamw1.9#############以下为Adamw1.10##################################
+对照组：SGD，0.005，epoch1：mAP:0.607（loss: 0.5499）；epoch2：mAP:0.659（loss: 0.4740）;epoch3：mAP:0.685（loss: 0.4733）；
+                                    ep4：0.740 ；ep5：0.765；ep6：0.786；ep7：0.802；ep8：0.811；
+                                    ep9：0.844；ep10：0.843；ep11：0.851（loss: 0.2610）；
+                                    epoch12：mAP:0.852（loss: 0.2560）
+#########################################################################################################
+
+第六次调整优化器，取消rcnn层ohem，grad_clip=0，调整优化器AdamW（默认lr0.001）：0（loss：nan）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/6.work-dir-adamw1.10-cfg0-0.001
+
+第七次调整优化器，取消rcnn层ohem，grad_clip有，调整优化器AdamW（默认lr0.001）： mAP: 0.2481（loss: 0.7852）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.0.work-dir-adamw1.10-cfg-0.001
+
+第八次调整优化器，取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.005）： 0（loss：nan）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.1.work-dir-adamw1.10-cfg-0.005
+
+第九次调整优化器，取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.003）： 0（loss:0.9400 ）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.2.work-dir-adamw1.10-cfg-0.003
+
+第十次调整优化器，取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.002）： 0（loss: 0.8532）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.3.work-dir-adamw1.10-cfg-0.002
+
+第十一次调整优化器，取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.0005）： 0.3847（loss: 0.6663）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005
+
+ctrl z 暂停进程；fg %1恢复到前台；
+
+第十一次调整优化器，取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.0005）：ep1mAP:  0.3847（loss: 0.6663）// ep2mAP: 0.533（loss: 0.6013）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005
+
+第十一（2）次调整优化器（与十一次对照），取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.0005），ep3断点续训：\
+ep1mAP:  0.3847（loss: 0.6663）// ep2mAP: 0.533（loss: 0.6013）// ep3mAP: 0.601（loss: 0.5307） ......    //ep12mAP:0.787(loss: 0.3667)
+
+python tools/train.py /root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005/oriented_rcnn_r50_fpn_1x_dota_le90.py  \
+ --work-dir /root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005  \
+ --resume-from /root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005/epoch_3.pth
+
+第十一（2）次调整后，测试
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/7.4.work-dir-adamw1.10-cfg-0.0005/Task1_results
+
+
+
+
+第十二次调整优化器，取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.00025）：ep1mAP:  0.520（loss: 0.5544~0.7003）// ep2mAP: 0.631 （loss: 0.5143）// ep3mAP: 0（loss: nan）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.5.work-dir-adamw1.10-cfg-0.00025
+
+！!  Epoch [3][3250-3300/6400]，loss突变nan;
+
+@第十二（2）次调整优化器（与十一次对照），取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.00025），ep2断点续训：\
+ep1mAP:  0.520（loss: 0.5544~0.7003）// ep2mAP: 0.631 （loss: 0.5143）// ep3mAP: 0.689（loss:0.4487-0.4913）【超越】// ......   //ep12mAP:0.839(loss: 0.2665)【差一点】
+
+python tools/train.py /root/autodl-tmp/7.5.work-dir-adamw1.10-cfg-0.00025/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+--work-dir /root/autodl-tmp/7.5.work-dir-adamw1.10-cfg-0.00025 \
+--resume-from /root/autodl-tmp/7.5.work-dir-adamw1.10-cfg-0.00025/epoch_2.pth
+
+
+
+
+
+############如果添加了梯度裁剪依旧出现梯度爆炸的问题。那么可以考虑降低学习率，大约降低为原来的0.1（此处改为原来的0.2）即可#############################
+################################################【学习率降低为0.00005部分】########################################################
+
+第十三次调整优化器（对十二次进步），取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.00005）：ep1mAP: （loss: ）// ep2mAP: （loss: ）// ep3mAP: （loss: ）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.6.work-dir-adamw1.10-cfg-0.00005
+
+ep1mAP: 0.621（loss: 0.5385）；ep2mAP: 0.713（loss: ）；ep3mAP: 0.761（loss: 0.3954）；......ep12mAP:0.871
+
+
+###############################此前均为adamw1.9#############以下为Adamw1.10##################################
+对照组：SGD，0.005，epoch1：mAP:0.607（loss: 0.5499）；epoch2：mAP:0.659（loss: 0.4740）;epoch3：mAP:0.685（loss: 0.4733）；
+                                    ep4：0.740 ；ep5：0.765；ep6：0.786；ep7：0.802；ep8：0.811；
+                                    ep9：0.844；ep10：0.843；ep11：0.851（loss: 0.2610）；
+                                    epoch12：mAP:0.852（loss: 0.2560）
+
+
+第十三（2）次调整后，测试
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/7.6.work-dir-adamw1.10-cfg-0.00005/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/7.6.work-dir-adamw1.10-cfg-0.00005/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/7.6.work-dir-adamw1.10-cfg-0.00005/Task1_results1
+注意：测试了两次，分别为Task1_results和Task1_results1
+
+###################################################
+
+第十三（3）次调整优化器（对十三次加ohem），加入rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.00005）： 0.176（loss:0.9506）
+python tools/train.py /root/autodl-tmp/8.6.work-dir-ohem-adamw1.10-cfg-0.00005/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+--work-dir /root/autodl-tmp/8.6.work-dir-ohem-adamw1.10-cfg-0.00005 \
+--resume-from /root/autodl-tmp/8.6.work-dir-ohem-adamw1.10-cfg-0.00005/epoch_2.pth
+ep1mAP: 0.622；ep2mAP:0.707;ep3mAP:0.760;
+ep4:0.783;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#####################################################################################################################################
+################################################【学习率降低为lr0.00001部分】###############################################################
+
+第十四次调整优化器（对十三次进步），取消rcnn层ohem，grad_clip有，调整优化器AdamW（lr0.00001）：ep1mAP: （loss: ）// ep2mAP: （loss: ）// ep3mAP: （loss: ）
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/7.7.work-dir-adamw1.10-cfg-0.00001
+1：0.544；2：0.661；3：0.718；4:  0.751;
+5：0.772；6:  0.787；7：0.803；8：0.825；
+9：0.838；10：0.841；11：0.843；12：0.844。
+
+###############################此前均为adamw1.9#############以下为Adamw1.10##################################
+对照组：SGD，0.005，epoch1：mAP:0.607（loss: 0.5499）；epoch2：mAP:0.659（loss: 0.4740）;epoch3：mAP:0.685（loss: 0.4733）；
+                                    ep4：0.740 ；ep5：0.765；ep6：0.786；ep7：0.802；ep8：0.811；
+                                    ep9：0.844；ep10：0.843；ep11：0.851（loss: 0.2610）；
+                                    epoch12：mAP:0.852（loss: 0.2560）
+#########################################################################################################
+
+第十四次调整后，测试
+python /root/mmrotate/tools/test.py  \
+  /root/autodl-tmp/7.7.work-dir-adamw1.10-cfg-0.00001/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+  /root/autodl-tmp/7.7.work-dir-adamw1.10-cfg-0.00001/epoch_12.pth --format-only \
+  --eval-options submission_dir=/root/autodl-tmp/7.7.work-dir-adamw1.10-cfg-0.00001/Task1_results
+
+
+
+
+
+python tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001 
+
+python /root/mmrotate/tools/train.py /root/mmrotate/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py --work-dir /root/autodl-tmp/work-dir-adamw1.10-customkeys-0.0001 
+
+ep1:0.606；ep2：0.660；ep3:0.719；ep4：0.765；ep5：0.791；

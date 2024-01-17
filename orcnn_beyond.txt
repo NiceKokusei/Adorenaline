@@ -1,0 +1,541 @@
+查看全环境
+conda info --envs
+
+环境obbdetectionlj2
+conda create --name obbdetectionlj2 python=3.8 -y
+conda activate obbdetectionlj2
+conda deactivate
+
+删除某个环境
+conda remove -n your_env_name(虚拟环境名称) --all
+
+配置
+conda install pytorch==1.7.1 torchvision==0.8.2 cudatoolkit=10.1 -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64/
+
+工程克隆
+git clone https://github.com/jbwang1997/OBBDetection.git --recursive
+cd OBBDetection
+
+工具箱
+cd BboxToolkit
+pip install -v -e .  # or "python setup.py develop"
+cd ..
+
+旧版mmcv-full安装
+pip install openmim
+mim install mmcv-full
+
+安装obbdetection
+pip install -r requirements/build.txt
+pip install mmpycocotools
+pip install -v -e .  # or "python setup.py develop"
+
+缺这个包pycocotools换mmpycocotools
+pip install pycocotools
+pip uninstall pycocotools
+pip show pycocotools
+pip install mmpycocotools
+git checkout 206107 -- mmdet/datasets/coco.py
+
+
+######################################分割线##########################
+前面的obbdetectionlj2环境并不成功，实际后续测试训练改为在obbdetectionlj4环境中，但记录日志却记载在此处了，大雾
+
+
+
+test测试集跑(outfile_prefix='./work_dirs/coco_detection/test')
+CUDA_VISIBLE_DEVICES=2 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp/results.pkl \
+--eval segm \
+--show-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp/vis
+
+
+
+成功测试单卡
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp/results5-outpre.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results"
+
+######################################分割线##########################
+
+
+#训练
+CUDA_VISIBLE_DEVICES=3 \
+python tools/train.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-dir
+
+#查看用法
+python tools/train.py --help
+
+#多gpu训练（旧版obbdetection，但是爆显存了，在1个epoch后保存时）
+CUDA_VISIBLE_DEVICES=3,4 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-dir/mask_rcnn_orpn_r50_fpn_1x_isaid_mul2 \
+--options \
+data.samples_per_gpu=4 \
+optimizer.lr=0.01
+
+#结束进程
+kill -15 33151
+kill -9 33151  #强制杀死
+
+
+#多gpu训练（旧版obbdetection，但端口不一样）
+CUDA_VISIBLE_DEVICES=3,4 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-dir
+
+
+#多gpu训练（旧版obbdetection，改为采用同一端口）
+CUDA_VISIBLE_DEVICES=4,5 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-dir2
+
+
+#单gpu训练（旧版obbdetection）
+CUDA_VISIBLE_DEVICES=3 \
+python tools/train.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-sig1
+
+
+#单gpu训练（旧版obbdetection，使用0卡）
+CUDA_VISIBLE_DEVICES=0 \
+python tools/train.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-card0
+
+
+
+#单gpu训练（旧版obbdetection，使用0卡，指标该segm）
+CUDA_VISIBLE_DEVICES=0 \
+python tools/train.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-card0  \
+--resume-from 
+
+查看磁盘空间使用情况
+du -h /home/wjb/lj
+查看目录的磁盘空间使用情况
+df -h
+
+############################################分割线########################
+
+#多gpu训练（规范写法，同一端口，使用trainval训练，取消evaluation=====最终成功）
+CUDA_VISIBLE_DEVICES=4,5 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+--gpus 2 \
+--gpu-ids 4,5 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-form-dir1
+
+
+#用自己训练成功的.pth测试(原版，但有问题）
+CUDA_VISIBLE_DEVICES=3,4,5 \
+bash ./tools/dist_test.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/results-try.pkl \
+--gpus 3 \
+--gpu-ids 3,4,5 \
+--format-only \
+--options \
+evaluation="dict(type='CocoMetric',metric=['segm'])"#传参数有问题
+
+#【10.01】用自己训练成功的.pth测试（改版，单卡）
+#目的：验证evaluation=none，，且未指定输出json名称，直接测试
+#结果：【失败】无json输出，只有pkl，确实是evaluation=none
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/results-try.pkl \
+--format-only 
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results"
+
+
+#【10.01】用自己训练成功的.pth测试(改版，多卡）
+#目的：多卡直接测试
+#结果：【无果，待修】也支持多节点测试，不过需要依赖 PyTorch 的 启动工具
+CUDA_VISIBLE_DEVICES=4,5 \
+bash ./tools/dist_test.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/results-try2.pkl \
+--gpus 2 \
+--gpu-ids 4,5 \
+--format-only 
+
+
+
+#【10.03】用自己训练成功的.pth测试(改版，单卡）
+#目的：单卡直接测试，这次evaluation进行了设置jsonfile_prefix，且指定输出json名称，故换用修改后的.py文件
+#结果：【失败】无./orcnnbyd_test-dev_results2生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-cfgjson/results-acevl.pkl \
+--format-only 
+
+
+#【10.03】用自己训练成功的.pth测试(改版，单卡）
+#目的：单卡直接测试，综合前两次问题，这次evaluation有，且json输出以--options指定
+#结果：【成功】有./orcnnbyd_test-dev_results3生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results3"
+
+
+
+#查看用法
+python tools/test.py --help
+
+
+
+#【10.15】用自己训练成功的.pth测试+可视化(改版，单卡）
+#目的：单卡直接测试，综合前两次问题，这次evaluation有，且json输出以--options指定
+#结果：【成功】有./orcnnbyd_test-dev_results3生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson-vis.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results3" \
+--show-dir /home/wjb/lj/atelier/OBBDetection/ZZZ \
+--show-score-thr 0.3
+
+
+#【10.16】用自己训练成功的.pth测试+可视化(改版，单卡）+去除掩码框
+#目的：单卡直接测试，综合前两次问题，这次evaluation有，且json输出以--options指定
+#结果：【成功】有./orcnnbyd_test-dev_results3生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson-vis1.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results3-1" \
+--show-dir /home/wjb/lj/atelier/OBBDetection/ZZZ/VIS1 \
+--show-score-thr 0.3
+
+
+
+
+#【10.16】用自己训练成功的.pth测试+可视化(改版，单卡）+去除掩码框+换色
+#目的：单卡直接测试，综合前两次问题，这次evaluation有，且json输出以--options指定
+#结果：【成功】有./orcnnbyd_test-dev_results3生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson-vis1.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results3-1" \
+--show-dir /home/wjb/lj/atelier/OBBDetection/ZZZ/VIS1 \
+--show-score-thr 0.3
+
+
+
+#【10.16】用自己训练成功的.pth测试+可视化(改版，单卡）+去除掩码框+换色+加粗线框20
+#目的：单卡直接测试，综合前两次问题，这次evaluation有，且json输出以--options指定
+#结果：【成功】有./orcnnbyd_test-dev_results3生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson-vis1.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results3-1" \
+--show-dir /home/wjb/lj/atelier/OBBDetection/ZZZ2 \
+--show-score-thr 0.3
+
+
+#【10.16】用自己训练成功的.pth测试+可视化(改版，单卡）+去除掩码框+换色（bgr改rgb）+加粗线框20
+#目的：单卡直接测试，综合前两次问题，这次evaluation有，且json输出以--options指定
+#结果：【成功】有./orcnnbyd_test-dev_results3-1生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson-vis1.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results3-1" \
+--show-dir /home/wjb/lj/atelier/OBBDetection/VIS-nomask \
+--show-score-thr 0.3
+
+
+
+#【10.17】用自己训练成功的.pth测试+可视化(改版，单卡）+去除bb框+绿色+加粗线框外接矩形
+#目的：单卡直接测试，综合前两次问题，这次evaluation有，且json输出以--options指定
+#结果：【成功】有./orcnnbyd_test-dev_results3-1生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson-vis2.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results3-2" \
+--show-dir /home/wjb/lj/atelier/OBBDetection/VIS-nobbox \
+--show-score-thr 0.3
+
+
+#【10.17】用自己训练成功的.pth测试+可视化(改版，单卡）+只需bbox+15色+无text标注
+#目的：可视化只有边界框，无text，无mask
+#结果：【成功】有./orcnnbyd_test-dev_results-10.17生成，而且segm和bbox均有生成
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-acevl-opjson/results-acevl-opjson-vis2.pkl \
+--format-only \
+--options "jsonfile_prefix=./orcnnbyd_test-dev_results-10.17" \
+--show-dir /home/wjb/lj/atelier/OBBDetection/VIS-nomask-notext \
+--show-score-thr 0.3
+
+
+
+
+
+
+#查看用法
+python /home/wjb/lj/atelier/OBBDetection/tools/browse_dataset.py --help
+
+#【10.18】可视化gt框和训练集（v2.0.0工具箱）
+#目的：
+#结果：【失败】用不了，无mask
+python  /home/wjb/lj/atelier/OBBDetection/tools/browse_dataset.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py
+--output-dir /home/wjb/lj/atelier/OBBDetection/VIS-trainwithgt
+
+
+
+#【10.18】可视化gt框和训练集（v3.0.0工具箱）
+#目的：
+#结果：【失败】用不了，无配置文件已改写，旧版无法使用新版的
+python  /home/wjb/lj/atelier/mmdetection2/tools/analysis_tools/browse_dataset.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py
+--output-dir /home/wjb/lj/atelier/OBBDetection/VIS-trainwithgt
+
+
+
+
+
+#【10.19】可视化gt框和训练集（jbw-vis）
+#目的：
+#结果：无果
+python  /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/visualize.py \
+--load_type dota \
+--img_dir /data3/wjb/dataset/isaid_split/val/images
+--ann_dir /data3/wjb/dataset/isaid_split/val/instancesonly_filtered_val.json
+--save_dir /home/wjb/lj/atelier/OBBDetection/VIS-trainwithgt
+
+
+
+#【10.19】可视化gt框和训练集（jbw-vis）
+#目的：
+#结果：无果
+CUDA_VISIBLE_DEVICES=3 \
+python  /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/visualize.py \
+--base_json /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/vis_configs/dota1_0/configcopy.json
+
+
+
+#【10.19】可视化gt框和训练集（jbw-vis+gd）
+#目的：
+#结果：无果
+CUDA_VISIBLE_DEVICES=3 \
+python  /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/visualize.py \
+--load_type imgs \
+--img_dir /data3/wjb/dataset/isaid_split/val/images \
+--ann_dir /data3/wjb/dataset/isaid_split/val/instancesonly_filtered_val.json \
+--save_dir /home/wjb/lj/atelier/OBBDetection/VIS-trainwithgt
+
+
+
+#【10.19】可视化gt框和训练集（jbw-vis+gd）
+#目的：
+#结果：无果
+CUDA_VISIBLE_DEVICES=3 \
+python  /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/visualize.py \
+--load_type dota_submission \
+--img_dir /data3/wjb/dataset/isaid_split/test/images \
+--ann_dir /home/wjb/lj/atelier/OBBDetection/orcnnbyd_test-dev_results-10.17_segm.json \
+--save_dir /home/wjb/lj/atelier/OBBDetection/VIS-trainwithgt
+
+
+##############################################################重开新分割线#####################################################
+
+python /home/wjb/lj/atelier/OBBDetection/BboxToolkit/tools/img_split.py --help
+
+#【10.25】
+#目的：ORCNN-fair1m 训练
+#结果：成功
+CUDA_VISIBLE_DEVICES=3 \
+python tools/train.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIR
+
+
+
+
+#【10.26】
+#目的：ORCNN-fair1m 训练【多卡】
+#结果：成功，但训完ep2又断了
+CUDA_VISIBLE_DEVICES=3,4 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+2 \
+--resume-from /home/wjb/lj/atelier/OBBDetection/WORKDIR/epoch_2.pth \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIR
+
+
+
+#【10.27】
+#目的：ORCNN-fair1m 测试
+#结果：
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIR/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIR/results-fair1m-sub2.pkl \
+--format-only
+
+
+
+
+#【10.29】
+#目的：ORCNN-BYD 测试 r101 r152
+#结果：
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/demo/mask_rcnn_orpn_r101_fpn_1x_isaid_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZ-OUT/results-orcnbbyd101.pkl \
+--format-only 
+
+
+CUDA_VISIBLE_DEVICES=5 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/demo/mask_rcnn_orpn_r152_fpn_1x_isaid_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZ-OUT/results-orcnbbyd152.pkl \
+--format-only 
+
+
+
+CUDA_VISIBLE_DEVICES=4 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/workdirtmp-noevl-dir1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZ-OUT/results-orcnbbyd50.pkl \
+--format-only \
+
+###################################
+CUDA_VISIBLE_DEVICES=4 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r101_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/demo/mask_rcnn_orpn_r101_fpn_1x_isaid_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZ-OUT/results1-orcnbbyd101.pkl \
+--format-only 
+
+CUDA_VISIBLE_DEVICES=5 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r152_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/demo/mask_rcnn_orpn_r152_fpn_1x_isaid_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZ-OUT/results1-orcnbbyd152.pkl \
+--format-only 
+
+
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn_beyond/mask_rcnn_orpn_r50_fpn_1x_isaid_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZ-OUT/results1-orcnbbyd50.pkl \
+--format-only 
+
+
+
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_dota10.py \
+/home/wjb/lj/atelier/OBBDetection/demo/faster_rcnn_orpn_r50_fpn_1x_dota10_epoch12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/ZZZ-OUT/results1-orcnn50.pkl \
+--format-only 
+
+######################################分割线：新一周##########################################
+
+#【10.30】
+#目的：DOTA转FAIR1M，便于提交
+#结果：
+python /home/wjb/lj/atelier/OBBDetection/demo/dota2fair1m.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIR/resultfair1m \
+/home/wjb/lj/atelier/OBBDetection/WORKDIR/fair1m-resultxml \
+/data3/wjb/dataset/rcf/fair1m/fair1m_my_train/split_ss_1024_test/images
+
+
+
+#【10.30】
+#目的：ORCNN-fair1m 二次训练，初始2卡训练,lr=0.005（小改RandomOBBRotate）
+#结果：
+CUDA_VISIBLE_DEVICES=4,5 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+2 \
+--work-dir /home/wjb/lj/atelier/OBBDetection/WORKDIR-1
+
+
+
+
+#【10.30】
+#目的：ORCNN-fair1m 二次测试，rcf路径下test只有8137张图，现在换为全18021张图
+#结果：
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIR/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIR/results-fair1m-alltest2.pkl \
+--format-only \
+--options "data.test.ann_file='/data3/wjb/dataset/rcf/fair1m/split_ss_1024_test_full/annfiles/'" "data.test.img_prefix='/data3/wjb/dataset/rcf/fair1m/split_ss_1024_test_full/'"
+
+
+
+
+
+
+#【10.31】
+#目的：ORCNN-fair1m 用第二次训练的pth来测试，训练集mAP更高，rcf路径下test只有8137张图（1.0任务就只需要8137张图）
+#结果：成功
+CUDA_VISIBLE_DEVICES=3 \
+python tools/test.py \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/oriented_rcnn/faster_rcnn_orpn_r50_fpn_1x_fair1m10.py \
+/home/wjb/lj/atelier/OBBDetection/WORKDIR-1/epoch_12.pth \
+--out /home/wjb/lj/atelier/OBBDetection/WORKDIR-1/fair1mresult-1.pkl \
+--format-only 
+
+
+
+
+
+
+
+

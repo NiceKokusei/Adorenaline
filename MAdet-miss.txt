@@ -1,0 +1,79 @@
+
+
+
+
+
+
+#【11.10】
+#目的：MAdet测试推理.pth
+#结果：
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/MADet/tools/test.py \
+/home/wjb/lj/atelier/MADet/configs/madet/madet_r50_fpn_1x_coco.py \
+/home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v1:val-pth/epoch_12.pth \
+--out /home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v1:val-pth/madet-1110-try-fm.pkl \
+--format-only
+
+
+#val:0.432
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/MADet/tools/test.py \
+/home/wjb/lj/atelier/MADet/configs/madet/madet_r50_fpn_1x_coco.py \
+/home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v1:val-pth/epoch_12.pth \
+--out /home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v1:val-pth/madet-1110-try-ev.pkl \
+--eval bbox
+
+
+#val:0.534
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/MADet/tools/test.py \
+/home/wjb/lj/atelier/MADet/configs/madet/madet_r50_fpn_1x_coco.py \
+/home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v2:test-pth/epoch_12.pth \
+--out /home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v2:test-pth/madet-1110-try2-ev.pkl \
+--eval bbox
+
+_____________________________________________________________________________________________________________________
+
+###改了test路径，输出检测,无json输出
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/MADet/tools/test.py \
+/home/wjb/lj/atelier/MADet/configs/madet/madet_r50_fpn_1x_coco.py \
+/home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v2:test-pth/epoch_12.pth \
+--format-only
+
+###改了test路径，输出检测,加了json_prefix，改了test路径和标签【123】
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/MADet/tools/test.py \
+/home/wjb/lj/atelier/MADet/configs/madet/madet_r50_fpn_1x_coco.py \
+/home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v2:test-pth/epoch_12.pth \
+--format-only
+
+
+
+###改了test路径，输出检测,加了json_prefix，改了test路径和标签【456】
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/MADet/tools/test.py \
+/home/wjb/lj/atelier/MADet/configs/madet/madet_r50_fpn_1x_coco.py \
+/home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v1:val-pth/epoch_12.pth \
+--format-only
+
+
+
+#目的：madet训练
+#结果：【报错】
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=24448 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/MADet/configs/madet/madet_r50_fpn_1x_coco.py \
+4 \
+--cfg-options optimizer.lr=0.01 \
+--work-dir /home/wjb/lj/atelier/MADet/WORKDIRS/MADET/v3
+
+
+
+
+
+
+
+
+

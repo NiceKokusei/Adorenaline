@@ -1,0 +1,225 @@
+
+
+#【11.04】
+#目的：lsk fair训练
+#结果：
+CUDA_VISIBLE_DEVICES=0,2,3,4 \
+PORT=44446 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/lsknet/lsk_s_fpn_1x_fair_le90.py \
+4 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/v1 \
+--cfg-options optimizer.lr=0.0001
+
+
+#【11.07】
+#目的：lsk fair训练（2卡）
+#结果：
+CUDA_VISIBLE_DEVICES=1,2 \
+PORT=44447 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/lsknet/lsk_s_fpn_1x_fair_le90.py \
+2 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/v1 \
+--cfg-options optimizer.lr=0.00005
+#应该还是配置什么的有问题
+
+
+
+——————————————————————————————————————————————————————————
+
+#【11.09】
+#目的：lsk fair训练（不具备自动调节能力，lr默认8卡）（需放置预训练的tar）（adamw）
+#结果：【寄】【4卡，训练第一张卡会多进程，中途爆显存】
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=43215 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/lsknet/lsk_s_fpn_1x_fair_le90.py \
+4 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS-LSK/ORCNN/v1 \
+--cfg-options optimizer.lr=0.0001
+
+#【11.09】
+#目的：lsk fair训练（不具备自动调节能力，lr默认8卡）（需放置预训练的tar）（adamw）
+#结果：【寄】【4卡，重复操作，训练第一张卡会多进程，中途爆显存，且在同一位置爆】
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=43299 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/lsknet/lsk_s_fpn_1x_fair_le90.py \
+4 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS-LSK/ORCNN/v1 \
+--auto-resume
+
+#【11.13】
+#目的：lsk fair训练（不具备自动调节能力，lr默认8卡）（需放置预训练的tar）（adamw）
+#结果：【寄】【5卡，训练第一张卡会多进程，中途爆显存，但在不同位置爆】
+CUDA_VISIBLE_DEVICES=1,2,3,4,5 \
+PORT=43299 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/lsknet/lsk_s_fpn_1x_fair_le90.py \
+5 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS-LSK/ORCNN/v1 \
+--auto-resume
+
+
+
+#【11.16】
+#目的：lsk fair训练（不具备自动调节能力，lr默认8卡）（需放置预训练的tar）（adamw）
+#结果：【寄】【4卡，重复操作，训练第一张卡会多进程，中途爆显存，且在同一位置爆】
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=43299 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/lsknet/lsk_s_fpn_1x_fair_le90.py \
+4 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS-LSK/ORCNN/v1 \
+--auto-resume
+
+
+#【11.16】
+#目的：lsk fair训练（bs改1）
+#结果：【寄】【4卡】
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=43299 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/lsknet/lsk_s_fpn_1x_fair_le90.py \
+4 \
+--cfg-options optimizer.lr=0.0001 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS-LSK/ORCNN/v2-bs1
+
+
+
+
+
+
+
+##########################################################################################################
+————————————————————————rt切图———————————————————
+
+#【11.07】
+#目的：MMROTATE切图（切了dota和fair），非pkl；中途报了一个错：pip install shapely
+#结果：（均成功）
+python tools/data/dota/split/img_split.py --base-json \
+  tools/data/dota/split/split_configs/ss_trainval.json
+
+python tools/data/dota/split/img_split.py --base-json \
+  tools/data/dota/split/split_configs/ss_test.json
+
+python tools/data/dota/split/img_split.py --base-json \
+  tools/data/dota/split/split_configs/ss_train.json
+
+python tools/data/dota/split/img_split.py --base-json \
+  tools/data/dota/split/split_configs/ss_val.json
+
+———————————————————————————————————————————————
+【￥：此题终结】
+
+##############################################RT:FCOS################################################
+
+
+#目的：MMROTATE训练  RT:FCOS
+#结果：
+CUDA_VISIBLE_DEVICES=2,3,4,5 \
+PORT=24447 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/rotated_fcos/rotated_fcos_r50_fpn_1x_dota_le90.py \
+4 \
+--cfg-options optimizer.lr=0.01 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/FCOS/v1
+
+
+CUDA_VISIBLE_DEVICES=4,5 \
+PORT=25247 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/rotated_fcos/rotated_fcos_r50_fpn_1x_dota_le90.py \
+2 \
+--cfg-options optimizer.lr=0.005 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/FCOS/v1
+
+
+
+##############################################################################################################
+
+
+#【11.13】
+#目的：
+lsk dota训练（不具备自动调节能力，lr默认8卡）（需放置预训练的tar）（adamw）
+1.测试直接指定不存在路径/2.在lr中直接传入数学运算/3.看看--gpus（不支持，笑死）
+#结果：
+CUDA_VISIBLE_DEVICES=1,2,3,4,5 \
+PORT=47799 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+5 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS-LSK/LSK:ORCNN-DOTA/v2 \
+--cfg-options optimizer.lr=0.0000625
+
+
+
+CUDA_VISIBLE_DEVICES=3 \
+python /home/wjb/lj/atelier/Large-Selective-Kernel-Network/tools/train.py \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS-LSK/LSK:ORCNN-DOTA/v3-single \
+--cfg-options optimizer.lr=0.0000125
+
+
+
+
+
+######################################################################################################################
+
+
+#【11.16】
+#目的：ORCNN fair训练（4卡）【正常，非LSK】
+#结果：
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=44449 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_fair_le90.py \
+4 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/ORCNN/v2-g4 \
+--cfg-options optimizer.lr=0.01
+
+
+
+#【11.16】
+#目的：ORCNN dota训练（4卡）【正常，非LSK】
+#结果：
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=44450 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/Large-Selective-Kernel-Network/configs/oriented_rcnn/oriented_rcnn_r50_fpn_1x_dota_le90.py \
+4 \
+--work-dir /home/wjb/lj/atelier/Large-Selective-Kernel-Network/WORKDIRS/ORCNN/v3-dota-g4 \
+--cfg-options optimizer.lr=0.01
+
+
+
+CUDA_VISIBLE_DEVICES=0,2,4,5 \
+PORT=44450 \
+bash ./tools/dist_train.sh \
+/home/wjb/lj/atelier/OBBDetection/configs/obb/s2anet/s2anet_r50_fpn_1x_dota10.py \
+4 \
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
